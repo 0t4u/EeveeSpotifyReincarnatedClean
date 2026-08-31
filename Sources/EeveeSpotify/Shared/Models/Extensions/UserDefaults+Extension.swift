@@ -9,6 +9,7 @@ extension UserDefaults {
     private static let patchTypeKey = "patchType"
     private static let trueShuffleEnabledKey = "trueShuffleEnabled"
     private static let overwriteConfigurationKey = "overwriteConfiguration"
+    private static let hideLyricsUnderCoverArtKey = "hideLyricsUnderCoverArt"
     private static let lyricsColorsKey = "lyricsColors"
     private static let lyricsOptionsKey = "lyricsOptions"
     private static let hasShownCommonIssuesTipKey = "hasShownCommonIssuesTip"
@@ -74,6 +75,15 @@ extension UserDefaults {
         }
         set (overwriteConfiguration) {
             container.set(overwriteConfiguration, forKey: overwriteConfigurationKey)
+        }
+    }
+
+    static var hideLyricsUnderCoverArt: Bool {
+        get {
+            container.object(forKey: hideLyricsUnderCoverArtKey) as? Bool ?? false
+        }
+        set {
+            container.set(newValue, forKey: hideLyricsUnderCoverArtKey)
         }
     }
     

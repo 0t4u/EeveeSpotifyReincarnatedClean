@@ -30,6 +30,32 @@ require(
     "disabled overwrite must retain the live configuration"
 )
 
+for scope in [
+    "ios-listening-activity",
+    "ios-nowplaying-contentlayers-impl",
+    "ios-feature-nowplaying",
+    "ios-feature-canvas",
+    "ios-feature-cover-art-snake",
+    "ios-feature-readalong",
+    "ios-creativeworkcommons-cover-art-tilt-configuration-kit",
+] {
+    require(
+        ServerSidedFeaturePolicy.shouldPreserveLiveConfigurationAssignment(
+            scope: scope,
+            name: "any_flag"
+        ),
+        "live UI assignment scope must be preserved: \(scope)"
+    )
+}
+
+require(
+    !ServerSidedFeaturePolicy.shouldPreserveLiveConfigurationAssignment(
+        scope: "ios-feature-search",
+        name: "any_flag"
+    ),
+    "unrelated scopes must continue using the bundled configuration"
+)
+
 require(
     ServerSidedFeaturePolicy.premiumGatedJamEntryPoint == .init(
         scope: "ios-sociallistening-configuration-impl",

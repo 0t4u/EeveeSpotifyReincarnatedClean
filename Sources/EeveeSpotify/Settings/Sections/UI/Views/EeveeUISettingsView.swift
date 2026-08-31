@@ -60,6 +60,20 @@ struct EeveeUISettingsView: View {
                 }
             }
 
+            if EeveeSpotify.isSpotify91OrNewer {
+                Section(
+                    footer: Text("hide_lyrics_under_cover_art_description".localized)
+                ) {
+                    Toggle(
+                        "hide_lyrics_under_cover_art".localized,
+                        isOn: Binding<Bool>(
+                            get: { UserDefaults.hideLyricsUnderCoverArt },
+                            set: { UserDefaults.hideLyricsUnderCoverArt = $0 }
+                        )
+                    )
+                }
+            }
+
             Section(
                 footer: Text("restart_is_required_description".localized)
             ) {

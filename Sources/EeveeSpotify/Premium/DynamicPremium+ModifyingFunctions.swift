@@ -1,11 +1,6 @@
 import Foundation
 import UIKit
 
-private let liveMessagingAssignmentKeys = Set([
-    "ios-campfire-properties-impl.campfire_feature_enabled",
-    "ios-feature-sidedrawer-platform.is_list_page_enabled"
-])
-
 func modifyRemoteConfiguration(_ configuration: inout UcsResponse) {
     modifyAttributes(&configuration.attributes.accountAttributes)
 
@@ -13,18 +8,25 @@ func modifyRemoteConfiguration(_ configuration: inout UcsResponse) {
     if ServerSidedFeaturePolicy.shouldOverwriteResolvedConfiguration(
         requested: overwriteRequested
     ) {
-        // Messaging availability is assigned to the current account. A bundled
-        // Premium snapshot can otherwise hide the chat UI for a different cohort.
-        let liveMessagingAssignments = configuration.assignedValues.filter {
-            liveMessagingAssignmentKeys.contains("\($0.propertyID.scope).\($0.propertyID.name)")
+        // Keep current-cohort UI assignments while replacing the rest with the
+        // version-selected Premium snapshot. Otherwise the snapshot can force
+        // friend activity on and replace live Now Playing cover-art behavior.
+        let liveUIAssignments = configuration.assignedValues.filter {
+            ServerSidedFeaturePolicy.shouldPreserveLiveConfigurationAssignment(
+                scope: $0.propertyID.scope,
+                name: $0.propertyID.name
+            )
         }
 
         do {
             configuration.resolve.configuration = try BundleHelper.shared.resolveConfiguration()
             configuration.assignedValues.removeAll {
-                liveMessagingAssignmentKeys.contains("\($0.propertyID.scope).\($0.propertyID.name)")
+                ServerSidedFeaturePolicy.shouldPreserveLiveConfigurationAssignment(
+                    scope: $0.propertyID.scope,
+                    name: $0.propertyID.name
+                )
             }
-            configuration.assignedValues.append(contentsOf: liveMessagingAssignments)
+            configuration.assignedValues.append(contentsOf: liveUIAssignments)
         } catch {
             // Keep Spotify's live configuration if the bundled snapshot is
             // missing or incompatible with this app build.
@@ -38,7 +40,8 @@ func modifyRemoteConfiguration(_ configuration: inout UcsResponse) {
     modifyAssignedValues(&configuration.assignedValues)
 }
 
-private let propertyReplacements = [
+private var propertyReplacements: [EeveePropertyReplacement] {
+[
     // Append when the account's config omits them, so they work without overwrite-configuration.
     EeveePropertyReplacement(name: "crossfade_enabled", scope: "ios-feature-settings", modification: .forceBool(true)),
     EeveePropertyReplacement(name: "automix_enabled", scope: "ios-feature-settings", modification: .forceBool(true)),
@@ -371,6 +374,14 @@ private let propertyReplacements = [
     // 😡😡😡 spotify, stop changing the scroll logic
     EeveePropertyReplacement(name: "should_nova_scroll_use_scrollsita", modification: .remove),
 
+    // Keep the native control for hiding lyrics beneath the cover visible even
+    // when Spotify's live response omits this optional UI assignment.
+    EeveePropertyReplacement(
+        name: "lyrics_under_cover_art_enabled",
+        scope: "ios-nowplaying-contentlayers-impl",
+        modification: .forceBool(!UserDefaults.hideLyricsUnderCoverArt)
+    ),
+
     EeveePropertyReplacement(name: "lyrics_entry_point_enabled", scope: "ios-feature-lyrics", modification: .forceBool(true)),
     EeveePropertyReplacement(name: "enable_lyrics_share", scope: "ios-feature-lyrics", modification: .forceBool(true)),
     EeveePropertyReplacement(name: "lyrics_share_enabled", scope: "ios-feature-lyrics", modification: .forceBool(true)),
@@ -390,6 +401,7 @@ private let propertyReplacements = [
     EeveePropertyReplacement(name: "enable_share_link_preview_uploads", modification: .forceBool(true)),
     EeveePropertyReplacement(name: "enable_sharing_v2", modification: .forceBool(true))
 ]
+}
 
 private func modifyAssignedValues(_ values: inout [AssignedValue]) {
     for replacement in propertyReplacements {

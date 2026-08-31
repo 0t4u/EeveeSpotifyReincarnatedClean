@@ -37,6 +37,11 @@
                 "usernames": ["estrogencat"],
                 "displayName": "estrogencat",
                 "roles": ["Icon fixes"]
+            },
+            {
+                "usernames": ["nodzen"],
+                "displayName": "Nodzen",
+                "roles": ["Maintainer", "Developer"]
             }
         ]
     },

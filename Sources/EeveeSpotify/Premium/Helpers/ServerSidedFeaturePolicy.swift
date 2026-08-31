@@ -30,6 +30,29 @@ struct ServerSidedFeaturePolicy {
         name: "premium_gated_start_jam_buttons_enabled"
     )
 
+    // These UI assignments belong to the current Spotify build/cohort. A
+    // bundled Premium snapshot must not force friend activity or replace the
+    // live Now Playing cover-art behavior.
+    private static let liveConfigurationAssignmentScopes: Set<String> = [
+        "ios-listening-activity",
+        "ios-nowplaying-contentlayers-impl",
+        "ios-feature-nowplaying",
+        "ios-feature-canvas",
+        "ios-feature-cover-art-snake",
+        "ios-feature-readalong",
+        "ios-creativeworkcommons-cover-art-tilt-configuration-kit",
+    ]
+
+    private static let liveConfigurationAssignmentKeys: Set<String> = [
+        "ios-campfire-properties-impl.campfire_feature_enabled",
+        "ios-feature-sidedrawer-platform.is_list_page_enabled",
+    ]
+
+    static func shouldPreserveLiveConfigurationAssignment(scope: String, name: String) -> Bool {
+        liveConfigurationAssignmentScopes.contains(scope)
+            || liveConfigurationAssignmentKeys.contains("\(scope).\(name)")
+    }
+
     static func shouldOverwriteResolvedConfiguration(requested: Bool) -> Bool {
         requested
     }

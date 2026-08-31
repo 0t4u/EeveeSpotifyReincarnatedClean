@@ -62,4 +62,14 @@ let mixedResult = BrowsitaSectionStripper.strip(mixed, url: scrollURL)
 require(mixedResult != nil && mixedResult!.count < mixed.count,
         "leave-behind section must be removed case-insensitively")
 
+let homeAdVariants = message([
+    "ordinary section",
+    "mobile-display-ad-card",
+    "native-ad-home-shelf",
+    "sponsored-playlist-header"
+])
+let homeAdResult = BrowsitaSectionStripper.strip(homeAdVariants, url: scrollURL)
+require(homeAdResult != nil && homeAdResult!.count < homeAdVariants.count,
+        "known Home/HUB ad component markers must be removed")
+
 print("BrowsitaSectionStripper regression tests passed")

@@ -8,7 +8,10 @@ enum BrowsitaSectionStripper {
         "spotify:ad:", "ad-formats", "advertisement", "brand-ad",
         "sponsored", "marquee", "promoted", "home-ads", "adsproduct",
         "leavebehind", "leave-behind", "premium-upsell", "premium_upsell",
-        "premiumupsell", "referralsupsellcard",
+        "premiumupsell", "referralsupsellcard", "display-ad-card",
+        "mobile-display-ad-card", "mobile-ads-display-ad-element",
+        "native-ad-home-shelf", "sponsored-playlist-header", "ad-slot",
+        "ad-inventory", "ads-sponsored-context", "sponsored-context",
     ].map { Array($0.utf8) }
 
     // Generic "upsell" metadata is not enough to delete a whole section. It

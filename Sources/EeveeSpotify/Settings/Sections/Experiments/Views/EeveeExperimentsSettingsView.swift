@@ -13,14 +13,16 @@ struct EeveeExperimentsSettingsView: View {
                 )
             }
             
-            Section(
-                footer: Text("show_instagram_destination_description"
-                    .localizeWithFormat("restart_is_required_description".localized))
-            ) {
-                Toggle(
-                    "show_instagram_destination".localized,
-                    isOn: $experimentsOptions.showInstagramDestination
-                )
+            if !EeveeSpotify.isSpotify91OrNewer {
+                Section(
+                    footer: Text("show_instagram_destination_description"
+                        .localizeWithFormat("restart_is_required_description".localized))
+                ) {
+                    Toggle(
+                        "show_instagram_destination".localized,
+                        isOn: $experimentsOptions.showInstagramDestination
+                    )
+                }
             }
         }
         .onChange(of: experimentsOptions) { options in

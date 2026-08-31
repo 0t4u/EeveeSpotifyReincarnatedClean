@@ -48,14 +48,16 @@ struct EeveeUISettingsView: View {
                 }
             }
             
-            Section {
-                Toggle(
-                    "dark_popups".localized,
-                    isOn: Binding<Bool>(
-                        get: { UserDefaults.darkPopUps },
-                        set: { UserDefaults.darkPopUps = $0 }
+            if !EeveeSpotify.isSpotify91OrNewer {
+                Section {
+                    Toggle(
+                        "dark_popups".localized,
+                        isOn: Binding<Bool>(
+                            get: { UserDefaults.darkPopUps },
+                            set: { UserDefaults.darkPopUps = $0 }
+                        )
                     )
-                )
+                }
             }
 
             Section(

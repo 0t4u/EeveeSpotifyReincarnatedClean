@@ -103,17 +103,19 @@ struct EeveeSettingsView: View {
                 )
             }
 
-            Button {
-                pushSettingsController(
-                    with: SponsorBlockSettingsView(),
-                    title: "sponsorblock".localized
-                )
-            } label: {
-                NavigationSectionView(
-                    color: .red,
-                    title: "sponsorblock".localized,
-                    imageSystemName: "forward.end.fill"
-                )
+            if EeveeSpotify.isSpotify91Family {
+                Button {
+                    pushSettingsController(
+                        with: SponsorBlockSettingsView(),
+                        title: "sponsorblock".localized
+                    )
+                } label: {
+                    NavigationSectionView(
+                        color: .red,
+                        title: "sponsorblock".localized,
+                        imageSystemName: "forward.end.fill"
+                    )
+                }
             }
 
             Button {

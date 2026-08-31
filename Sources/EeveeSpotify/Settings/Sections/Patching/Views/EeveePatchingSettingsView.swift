@@ -49,13 +49,15 @@ struct EeveePatchingSettingsView: View {
                     )
                 }
 
-                Section(
-                    footer: Text(
-                        "true_shuffle_dec".localized
-                        + "restart_is_required_description".localized
-                    )
-                ) {
-                    Toggle("true_shuffle".localized, isOn: $trueShuffleEnabled)
+                if EeveeSpotify.isSpotify91Family {
+                    Section(
+                        footer: Text(
+                            "true_shuffle_dec".localized
+                            + "restart_is_required_description".localized
+                        )
+                    ) {
+                        Toggle("true_shuffle".localized, isOn: $trueShuffleEnabled)
+                    }
                 }
             }
 

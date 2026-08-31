@@ -55,6 +55,11 @@ class HubsAdBlocker: ClassHook<NSObject> {
         "message",
     ]
 
+    private static let nestedComponentKeys: Set<String> = [
+        "children", "rows", "body", "header", "overlays", "sections",
+        "components", "items", "elements", "cards", "slots", "content",
+    ]
+
     private static func containsAdKeyword(_ str: String) -> Bool {
         let lower = str.lowercased()
         if hardAdKeywords.contains(where: { lower.contains($0) }) { return true }
@@ -100,59 +105,52 @@ class HubsAdBlocker: ClassHook<NSObject> {
         return false
     }
 
-    private func filterComponents(_ components: [[String: Any]]) -> [[String: Any]] {
-        var result = [[String: Any]]()
-        for var component in components {
-            if isAdComponent(component) {
+    private func filterComponent(_ component: [String: Any]) -> [String: Any]? {
+        guard !isAdComponent(component) else { return nil }
+
+        var filtered = component
+        for key in HubsAdBlocker.nestedComponentKeys {
+            if let nested = filtered[key] as? [String: Any] {
+                if let nestedFiltered = filterComponent(nested) {
+                    filtered[key] = nestedFiltered
+                } else {
+                    filtered.removeValue(forKey: key)
+                }
                 continue
             }
-            if let children = component["children"] as? [[String: Any]] {
-                component["children"] = filterComponents(children)
+
+            guard let nestedArray = filtered[key] as? [Any] else { continue }
+            var sawDictionary = false
+            let array = nestedArray.compactMap { item -> Any? in
+                guard let dictionary = item as? [String: Any] else { return item }
+                sawDictionary = true
+                return filterComponent(dictionary)
             }
-            if let rows = component["rows"] as? [[String: Any]] {
-                component["rows"] = filterComponents(rows)
+            if sawDictionary {
+                filtered[key] = array
             }
-            if let body = component["body"] as? [[String: Any]] {
-                component["body"] = filterComponents(body)
-            }
-            result.append(component)
         }
-        return result
+        return filtered
+    }
+
+    private func filterComponents(_ components: [[String: Any]]) -> [[String: Any]] {
+        components.compactMap { filterComponent($0) }
     }
 
     func addJSONDictionary(_ dictionary: NSDictionary?) {
-        guard var mutableDict = dictionary as? [String: Any] else {
+        guard let mutableDict = dictionary as? [String: Any] else {
             orig.addJSONDictionary(dictionary)
             return
         }
 
-        // Filter top-level "body" array
-        if let body = mutableDict["body"] as? [[String: Any]] {
-            mutableDict["body"] = filterComponents(body)
+        // The builder can receive a materialized ad component directly, not
+        // only a page containing one. Drop it before UIKit gets a chance to
+        // render the card.
+        guard let filtered = filterComponent(mutableDict) else {
+            NSLog("[EeveeSpotify][AdBlock] dropped a top-level HUB ad component")
+            return
         }
 
-        // Filter "header" component
-        if var header = mutableDict["header"] as? [String: Any] {
-            if isAdComponent(header) {
-                mutableDict.removeValue(forKey: "header")
-            } else {
-                if let children = header["children"] as? [[String: Any]] {
-                    header["children"] = filterComponents(children)
-                }
-                mutableDict["header"] = header
-            }
-        }
-
-        // Filter "overlays" array
-        if let overlays = mutableDict["overlays"] as? [[String: Any]] {
-            mutableDict["overlays"] = filterComponents(overlays)
-        }
-
-        // Filter "sections" array (used in some page types)
-        if let sections = mutableDict["sections"] as? [[String: Any]] {
-            mutableDict["sections"] = filterComponents(sections)
-        }
-
-        orig.addJSONDictionary(mutableDict as NSDictionary)
+        orig.addJSONDictionary(filtered as NSDictionary)
     }
 }

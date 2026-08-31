@@ -194,9 +194,33 @@ func eeveeBreadcrumb(_ label: String) {
 struct EeveeSpotify: Tweak {
     static let version = "6.7.0"
     static let repoSlug = GeneratedConfig.repoSlug
+
+    static var spotifyVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
+    }
+
+    private static var spotifyVersionParts: [Int] {
+        spotifyVersion.split(separator: ".").compactMap { Int($0) }
+    }
+
+    // Features backed by the old private Spotify surfaces are not safe to show
+    // once Spotify moves past the 9.0 UI family unless a new hook is verified.
+    static var isSpotify91OrNewer: Bool {
+        let parts = spotifyVersionParts
+        // Unknown versions fail closed: these controls are tied to private 9.0
+        // UI surfaces and should not be offered without a known compatible app.
+        guard parts.count >= 2 else { return true }
+        return parts[0] > 9 || (parts[0] == 9 && parts[1] >= 1)
+    }
+
+    // These hooks are currently verified only against the 9.1.x surface.
+    static var isSpotify91Family: Bool {
+        let parts = spotifyVersionParts
+        return parts.count >= 2 && parts[0] == 9 && parts[1] == 1
+    }
     
     static var hookTarget: VersionHookTarget {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
+        let version = spotifyVersion
         
         NSLog("[EeveeSpotify] Detected Spotify version: \(version)")
         
@@ -272,9 +296,12 @@ struct EeveeSpotify: Tweak {
         activateUpsellServiceBlocker()
 
         // Block upsell components injected into Hub/home JSON (e.g. upgrade banners).
-        if NSClassFromString("HUBViewModelBuilderImplementation") != nil {
+        if let hub = NSClassFromString("HUBViewModelBuilderImplementation"),
+           class_getInstanceMethod(hub, NSSelectorFromString("addJSONDictionary:")) != nil {
             AdBlockerGroup().activate()
             NSLog("[EeveeSpotify] AdBlockerGroup activated")
+        } else {
+            NSLog("[EeveeSpotify] Skipped AdBlockerGroup (HUB builder API unavailable)")
         }
 
         // activateEeveeFlexGesture()

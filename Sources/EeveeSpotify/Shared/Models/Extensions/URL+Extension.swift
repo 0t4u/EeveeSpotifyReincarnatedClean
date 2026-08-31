@@ -67,6 +67,24 @@ extension URL {
         let path = self.path.lowercased()
         let host = (self.host ?? "").lowercased()
 
+        // Keep third-party lyrics and metadata services out of Spotify's
+        // first-party path policy. Some providers legitimately use paths such
+        // as /banner/ or /marketing/.
+        let knownAdHost = host.contains("doubleclick") ||
+            host.contains("googlesyndication") ||
+            host == "ad.spotify.com" ||
+            host == "ads.spotify.com" ||
+            host == "aet.spotify.com" ||
+            host.hasPrefix("aet.")
+
+        if knownAdHost {
+            return true
+        }
+
+        guard host == "spotify.com" || host.hasSuffix(".spotify.com") else {
+            return false
+        }
+
         // The Premium marketing offer is a JSON upsell, not a regular ad
         // container. Keep it in the production blocking policy as well.
         if isPremiumMarketing {
@@ -140,16 +158,6 @@ extension URL {
            path.contains("/marketing/") ||
            path.contains("/home-ads/") ||
            path.contains("/search-ads/") {
-            return true
-        }
-        
-        // Block known ad hostnames
-        if host.contains("doubleclick") ||
-           host.contains("googlesyndication") ||
-           host == "ad.spotify.com" ||
-           host == "ads.spotify.com" ||
-           host == "aet.spotify.com" ||
-           host.hasPrefix("aet.") {
             return true
         }
         

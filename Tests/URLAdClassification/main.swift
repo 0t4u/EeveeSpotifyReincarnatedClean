@@ -16,12 +16,20 @@ require(url("https://spclient.wg.spotify.com/premium-marketing/upselloffer").isA
         "Premium marketing offer endpoint must be case-insensitive")
 require(url("https://spclient.wg.spotify.com/referrals/upsell/card").isAdRelated,
         "referral upsell card endpoint must be blocked")
+require(url("https://spclient.wg.spotify.com/ads/ad-on-app-open").isAdRelated,
+        "home ad-on-app-open endpoint must be blocked")
+require(url("https://spclient.wg.spotify.com/esperanto/v1/ad-slots").isAdRelated,
+        "Esperanto ad-slot endpoint must be blocked")
+require(url("https://spclient.wg.spotify.com/dac/view/v1/home").isAdRelated,
+        "home/search display-ad endpoint must be blocked")
 require(url("https://spclient.wg.spotify.com/leavebehind").isAdRelated,
         "leave-behind endpoint without a trailing slash must be blocked")
 require(url("https://doubleclick.net/v1/content").isAdRelated,
         "known ad hosts must be blocked")
 require(!url("https://spclient.wg.spotify.com/collection/v1/library/items").isAdRelated,
         "ordinary library endpoint must not be blocked")
+require(!url("https://lyrics.example.com/banner/v1/track").isAdRelated,
+        "generic ad-shaped paths on external lyrics hosts must remain available")
 
 require(url("https://firebaselogging.googleapis.com/v0cc/log").isSpotifyAnalyticsRelated,
         "Firebase logging endpoint must be blocked")

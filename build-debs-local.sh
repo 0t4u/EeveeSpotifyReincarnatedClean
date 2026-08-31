@@ -138,6 +138,7 @@ run_tests() {
     }
 
     say "Running focused Swift tests"
+    test_swift_file Sources/EeveeSpotify/ListeningActivityPrivacyPolicy.swift Tests/ListeningActivityPrivacy/main.swift
     test_swift_file Sources/EeveeSpotify/Premium/Helpers/BrowsitaSectionStripper.swift Tests/BrowsitaSectionStripper/main.swift
     test_swift_file Sources/EeveeSpotify/Shared/Models/Extensions/URL+Extension.swift Tests/URLAdClassification/main.swift
     test_swift_file Sources/EeveeSpotify/Premium/Helpers/ServerSidedFeaturePolicy.swift Tests/ServerSidedFeaturePolicy/main.swift

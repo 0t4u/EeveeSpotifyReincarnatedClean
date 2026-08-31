@@ -69,6 +69,11 @@ jobs:
       - name: Test ad and Premium banner filtering
         run: |
           swiftc \
+            Sources/EeveeSpotify/ListeningActivityPrivacyPolicy.swift \
+            Tests/ListeningActivityPrivacy/main.swift \
+            -o "$RUNNER_TEMP/listening-activity-privacy-tests"
+          "$RUNNER_TEMP/listening-activity-privacy-tests"
+          swiftc \
             Sources/EeveeSpotify/Premium/Helpers/BrowsitaSectionStripper.swift \
             Tests/BrowsitaSectionStripper/main.swift \
             -o "$RUNNER_TEMP/browsita-section-stripper-tests"

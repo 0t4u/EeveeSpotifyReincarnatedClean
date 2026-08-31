@@ -3,6 +3,7 @@
 # EeveeSpotifyReincarnatedClean
 
 **Maintainer:** [Nodzen](https://github.com/nodzen) <br />
+**Project Developer:** [jaydenjcpy](https://github.com/jaydenjcpy) <br />
 **Based on:** [EeveeSpotifyReincarnated](https://github.com/SideloadLabs/EeveeSpotifyReincarnated) <br />
 **Last Update:** `8/24/26` **Spotify Version:** `9.1.76`
 

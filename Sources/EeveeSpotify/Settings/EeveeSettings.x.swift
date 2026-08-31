@@ -34,7 +34,7 @@ class ProfileSettingsSectionHook: ClassHook<NSObject> {
             if let gitImage = BundleHelper.shared.uiImage("github") {
                 button.setImage(gitImage.withRenderingMode(.alwaysOriginal), for: .normal)
             } else {
-                button.setImage(UIImage(systemName: "globe"), for: .normal)
+                button.setImage(EeveeSettingsIcon.image(named: "globe"), for: .normal)
             }
             
             button.addTarget(
@@ -78,6 +78,9 @@ class ProfileSettingsSectionHook: ClassHook<NSObject> {
             .disclosureAccessoryView()
             
             tableViewCell.textLabel?.text = "EeveeSpotify"
+            tableViewCell.imageView?.image = EeveeSettingsIcon.image(named: "gearshape.fill")?
+                .withRenderingMode(.alwaysTemplate)
+            tableViewCell.imageView?.tintColor = .white
             return tableViewCell
         }
 

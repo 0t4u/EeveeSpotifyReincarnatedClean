@@ -272,6 +272,11 @@ struct EeveeSpotify: Tweak {
             return
         }
 
+        // Keep Listening Activity account-scoped and native: ON is untouched;
+        // after OFF the setting is persisted in Spotify's own local settings
+        // store and Spotify's publisher receives the same OFF value.
+        activateListeningActivityPrivacy()
+
         // Best-effort disablement of embedded analytics SDK collection. The
         // URLSession classifier is still required because SDK initialization
         // order and available selectors vary across Spotify builds.

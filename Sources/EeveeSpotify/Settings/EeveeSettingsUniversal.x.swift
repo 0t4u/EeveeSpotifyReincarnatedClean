@@ -51,7 +51,10 @@ class UniversalProfileSettingsSectionHook: ClassHook<NSObject> {
             .disclosureAccessoryView()
             
             tableViewCell.textLabel?.text = "EeveeSpotify"
-            
+            tableViewCell.imageView?.image = EeveeSettingsIcon.image(named: "gearshape.fill")?
+                .withRenderingMode(.alwaysTemplate)
+            tableViewCell.imageView?.tintColor = .white
+
             return tableViewCell
         }
         
@@ -81,7 +84,7 @@ class UniversalProfileSettingsSectionHook: ClassHook<NSObject> {
             button.setImage(githubImage.withRenderingMode(.alwaysOriginal), for: .normal)
         } else {
              // Fallback if github image is missing
-             button.setImage(UIImage(systemName: "globe"), for: .normal)
+             button.setImage(EeveeSettingsIcon.image(named: "globe"), for: .normal)
         }
         
         button.addTarget(
@@ -116,7 +119,7 @@ func injectEeveeButton(into target: UIViewController) {
     
     let button = UIButton(type: .system)
     // Use system image to guarantee visibility and avoid crashes
-    let image = UIImage(systemName: "gearshape.fill") ?? UIImage()
+    let image = EeveeSettingsIcon.image(named: "gearshape.fill") ?? UIImage()
     button.setImage(image, for: .normal)
     button.tintColor = .white
     
@@ -244,22 +247,28 @@ func injectEeveeInlineRow(into vc: UIViewController) {
     row.frame = CGRect(x: 0, y: -eeveeInlineRowHeight, width: cv.bounds.width, height: eeveeInlineRowHeight)
     row.autoresizingMask = [.flexibleWidth]
 
-    let textWidth = cv.bounds.width - 60
-    let title = UILabel(frame: CGRect(x: 20, y: 12, width: textWidth, height: 20))
+    let icon = UIImageView(image: EeveeSettingsIcon.image(named: "gearshape.fill"))
+    icon.tintColor = .white
+    icon.contentMode = .scaleAspectFit
+    icon.frame = CGRect(x: 20, y: 20, width: 24, height: 24)
+    row.addSubview(icon)
+
+    let textWidth = cv.bounds.width - 80
+    let title = UILabel(frame: CGRect(x: 56, y: 12, width: textWidth, height: 20))
     title.text = eeveeInlineRowTitle
     title.textColor = .white
     title.font = UIFont.systemFont(ofSize: 16)
     title.autoresizingMask = [.flexibleWidth]
     row.addSubview(title)
 
-    let subtitle = UILabel(frame: CGRect(x: 20, y: 34, width: textWidth, height: 18))
+    let subtitle = UILabel(frame: CGRect(x: 56, y: 34, width: textWidth, height: 18))
     subtitle.text = "eevee_inline_subtitle_text".localized
     subtitle.textColor = UIColor(white: 1.0, alpha: 0.6)
     subtitle.font = UIFont.systemFont(ofSize: 13)
     subtitle.autoresizingMask = [.flexibleWidth]
     row.addSubview(subtitle)
 
-    let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
+    let chevron = UIImageView(image: EeveeSettingsIcon.image(named: "chevron.right"))
     chevron.tintColor = UIColor(white: 1.0, alpha: 0.55)
     chevron.contentMode = .scaleAspectFit
     let chevSize: CGFloat = 14

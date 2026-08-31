@@ -137,14 +137,7 @@ func injectEeveeButton(into target: UIViewController) {
         // Add GitHub button to the Eevee settings page itself
         let subButton = UIButton(type: .system)
         
-        // Try loading hex image, fallback to system "globe" if it fails or bundle is missing
-        let bundleImage = BundleHelper.shared.uiImage("hex")
-        // Check if the image returned from BundleHelper is valid (has a size)
-        if let bundleImage = bundleImage, bundleImage.size != .zero {
-            subButton.setImage(bundleImage.withRenderingMode(.alwaysOriginal), for: .normal)
-        } else {
-             subButton.setImage(UIImage(systemName: "globe"), for: .normal)
-        }
+        subButton.setImage(EeveeSettingsIcon.image(named: "globe"), for: .normal)
         
         subButton.tintColor = .white
         
@@ -341,11 +334,7 @@ private func pushEeveeSettings(from vc: UIViewController) {
     )
 
     let subButton = UIButton(type: .system)
-    if let bundleImage = BundleHelper.shared.uiImage("hex"), bundleImage.size != .zero {
-        subButton.setImage(bundleImage.withRenderingMode(.alwaysOriginal), for: .normal)
-    } else {
-        subButton.setImage(UIImage(systemName: "globe"), for: .normal)
-    }
+    subButton.setImage(EeveeSettingsIcon.image(named: "globe"), for: .normal)
     subButton.tintColor = .white
     subButton.addAction(UIAction { [weak host] _ in
         host?.openRepositoryUrl(subButton)

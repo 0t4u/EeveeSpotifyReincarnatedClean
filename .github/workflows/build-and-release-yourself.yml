@@ -55,8 +55,8 @@ jobs:
         run: |
           mv spotify.ipa spotify.zip
           unzip spotify.zip -d spotify-ipa
-          if [ -f ${{ github.workspace }}/spotify-ipa/Payload/spotify.app/Watch ]; then
-              rm -r ${{ github.workspace }}/spotify-ipa/Payload/spotify.app/Watch
+          if [ -f ${{ github.workspace }}/spotify-ipa/Payload/Spotify.app/Watch ]; then
+              rm -r ${{ github.workspace }}/spotify-ipa/Payload/Spotify.app/Watch
           fi
           zip -r spotify.zip ${{ github.workspace }}/spotify-ipa/Payload
           mv spotify.zip spotify.ipa

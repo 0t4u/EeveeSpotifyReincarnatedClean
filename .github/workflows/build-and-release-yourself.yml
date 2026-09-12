@@ -51,6 +51,16 @@ jobs:
             echo "::error::Not a valid IPA: $file_type"; exit 1
           fi
 
+      - name: Delete Watch app
+        run: |
+          mv spotify.ipa spotify.zip
+          unzip spotify.zip -d spotify-ipa
+          if [ -f ${{ github.workspace }}/spotify-ipa/Payload/spotify.app/Watch ]; then
+              rm -r ${{ github.workspace }}/spotify-ipa/Payload/spotify.app/Watch
+          fi
+          zip -r spotify.zip ${{ github.workspace }}/spotify-ipa/Payload
+          mv spotify.zip spotify.ipa
+
       - name: Download .deb
         run: |
           wget "${{ inputs.tweak_url }}" --no-verbose -O ${{ github.workspace }}/eevee.deb
